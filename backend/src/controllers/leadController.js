@@ -22,11 +22,64 @@ export const createLead = async (req, res) => {
 };
 export const getLeads = async (req, res) => {
   try {
-    const leads = await Lead.find({ user: req.user.id });
+
+    const query = {user: req.user.id};
+
+    const stringFilters = ["first_name", "last_name", "email", "company","city","state"];
+
+    stringFilters.forEach(field => {
+        if(req.query[field]){
+
+            
+            query[field] = {$regex : req.query[field], $options: 'i'};
+        }
+    });
+
+    const enumFilters = ["source", "status"];
+    enumFilters.forEach(field => {
+        if(req.query[field]){
+        query[field] = req.query[field];
+        }
+    })
+    if(req.query.is_qualified){
+        query.is_qualified = req.query.is_qualified === "true"
+    }
+
+    if(req.query.score){
+        query.score = {};
+        if(req.query.score.gt){
+            query.score.$gt = Number(req.query.score.gt);
+        }
+        if(req.query.score.lt){
+            query.score.$lt = Number(req.query.score.lt);
+        }
+        if(req.query.score.equals){
+            query.score.$eq = Number(req.query.score.equals);
+        }
+    }
+
+
+
+    const page = parseInt(req.query.page, 10) || 1;
+    let limit = parseInt(req.query.limit, 10) || 20;
+
+    if(limit > 100){
+        limit = 100;
+    }
+
+    const startIndex = (page -1)*limit;
+    const total = await Lead.countDocuments(query)
+    const leads = await Lead.find(query)
+                            .sort({ createdAt: -1 }) 
+                            .limit(limit)
+                            .skip(startIndex);
     res.status(200).json({
       success: true,
-      count: leads.length,
       data: leads,
+      page: page,
+      limit: limit,
+      total: total,
+      totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
     res.status(500).json({ success: false, error: "Server Error" });
