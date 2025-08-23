@@ -5,6 +5,8 @@ import connectDB from "./config/db.js";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes.js"
+import leadRoutes from "./routes/leadRoutes.js"
+
 dotenv.config();
 
 
@@ -23,7 +25,7 @@ app.get("/", (req, res)=>{
 })
 
 app.use("/api/auth" , authRoutes);
-
+app.use("/api/leads",leadRoutes );
 
 
 
