@@ -7,4 +7,8 @@ export const loginUser = async (credentials) => {
 export const registerUser = async (userData) => {
     const { data } = await apiClient.post("/auth/register", userData);
     return data;
-};
+}
+export const logoutUser = async () => {
+  const { data } = await apiClient.post('/auth/logout');
+  return data;
+}
