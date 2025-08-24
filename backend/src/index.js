@@ -11,10 +11,21 @@ dotenv.config();
 
 
 const app = express();
-const PORT = process.env.PORT || 2810;
+const allowedOrigins = [
+  'http://localhost:2810',         
+  process.env.FRONTEND_URL          
+];
+
 app.use(cors({
-  origin :  process.env.FRONTEND_URL,
-  credentials:true
+  origin: function(origin, callback) {
+    
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 app.set('query parser', 'extended');
 app.use(express.json());
