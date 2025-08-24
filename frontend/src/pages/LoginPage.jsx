@@ -40,7 +40,7 @@ const LoginPage = () => {
         >
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
-         {error && <p className="text-red-400">{error.response.data.error}</p>} 
+        {error && <p className="text-red-400">{error.response?.data?.error || "Something went wrong"}</p>}
       </form>
     </div>
   );

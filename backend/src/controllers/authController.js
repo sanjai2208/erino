@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 const sendTokenResponse = (user, statusCode, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+    expiresIn: process.env.JWT_EXPIRE, 
   });
 
   const options = {
@@ -11,9 +11,13 @@ const sendTokenResponse = (user, statusCode, res) => {
       Date.now() + process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
   };
+
+  if (process.env.NODE_ENV === "production") {
+    options.secure = true;
+    options.sameSite = 'none';
+  }
+
   res
     .status(statusCode)
     .cookie("token", token, options)
