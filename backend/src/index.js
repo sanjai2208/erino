@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 const allowedOrigins = [
   'http://localhost:2810',         
-  process.env.FRONTEND_URL          
+   'https://erino-frontend.vercel.app'        
 ];
 
 app.use(cors({
